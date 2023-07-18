@@ -10,7 +10,8 @@
       5
     ],
     "sonarjs/prefer-object-literal": "off",
-    "mocha/no-setup-in-describe": "off"
+    "mocha/no-setup-in-describe": "off",
+    "indent": "warn"
   },
   "overrides": [
     {
