@@ -28,8 +28,22 @@ const createProductByName = async (name) => {
   }
 };
 
+const updateProducts = async (id, name) => {
+  try {
+    await connection.execute(
+      'UPDATE StoreManager.products SET name = ? WHERE id = ?;',
+      [name, id],
+    );
+    return { id, name };
+  } catch (error) {
+    console.error('Product error updating: ', error);
+    throw error;
+  }
+};
+
 module.exports = {
   findAllProducts,
   findByIdProducts,
   createProductByName,
+  updateProducts,
 };

@@ -1,4 +1,5 @@
 const { productsService } = require('../services');
+const productsModel = require('../models/products.model');
 
 const getAllProducts = async (_req, res) => {
   try {
@@ -34,8 +35,25 @@ const createProductByName = async (req, res) => {
   }
 };
 
+const updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const product = req.body;
+
+    const productBD = await productsModel.findByIdProducts(id);
+    if (productBD) {
+      const updatedProduct = await productsService.updateProduct(id, product.name);
+      return res.status(200).json(updatedProduct);
+    }
+    return res.status(404).json({ message: 'Product not found' });
+  } catch (err) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getAllProducts,
   getByIdProducts,
   createProductByName,
+  updateProduct,
 };
