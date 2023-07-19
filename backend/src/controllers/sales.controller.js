@@ -22,8 +22,19 @@ const getByIdSales = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
-  
+
+const createSales = async (req, res) => {
+  try {
+    const newSale = req.body;
+    const sale = await salesService.createSales(newSale);
+    return res.status(201).json(sale);
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getAllSales,
   getByIdSales,
+  createSales,
 };

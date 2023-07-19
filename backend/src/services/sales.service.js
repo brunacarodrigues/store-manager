@@ -14,7 +14,17 @@ const getByIdSales = async (id) => {
   return sale;
 };
 
+const createSales = async (sale) => {
+  const newIdSale = await salesModel.createSaleId();
+
+  sale.map(async (product) => {
+    await salesModel.createSales(newIdSale, product.productId, product.quantity);
+  });
+  return { id: newIdSale, itemsSold: sale };
+};
+
 module.exports = {
   getAllSales,
   getByIdSales,
+  createSales,
 };
