@@ -1,13 +1,12 @@
 const chai = require('chai');
 const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
-
 const { validateProductName } = require('../../../src/middlewares/validateProductName');
 
 const { expect } = chai;
 chai.use(sinonChai);
 
-describe('Testando o Middlewares', function () {
+describe('Testando o Middleware Validate Product Name', function () {
   beforeEach(function () {
     sinon.restore();
   });
