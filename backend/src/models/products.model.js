@@ -41,9 +41,23 @@ const updateProducts = async (id, name) => {
   }
 };
 
+const deleteProduct = async (id) => {
+  try {
+    await connection.execute(
+      'DELETE FROM products WHERE id = ?;',
+      [id],
+    );
+    return true;
+  } catch (error) {
+    console.error('Product delete error: ', error);
+    throw error;
+  }
+};
+
 module.exports = {
   findAllProducts,
   findByIdProducts,
   createProductByName,
   updateProducts,
+  deleteProduct,
 };

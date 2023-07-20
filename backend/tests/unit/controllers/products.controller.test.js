@@ -3,7 +3,7 @@ const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const { productsService } = require('../../../src/services');
 const { productsController } = require('../../../src/controllers');
-const { mockAllProducts } = require('../mock/products.mock');
+const { mockAllProducts, mockByIdProducts } = require('../mock/products.mock');
 const { productsModel } = require('../../../src/models');
 
 const { expect } = chai;
@@ -61,6 +61,20 @@ describe('Testando o Products Controller', function () {
     expect(res.json).to.have.been.calledWith(null);
   });
 
+  it('retorna o produto ao chamar a função getByIdProducts', async function () {
+    const req = { params: { id: 2 } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    sinon.stub(productsService, 'getByIdProducts').resolves(mockByIdProducts);
+    await productsController.getByIdProducts(req, res);
+
+    expect(res.status).to.have.been.calledWith(200);
+    expect(res.json).to.have.been.calledWith(mockByIdProducts);
+  });
+
   it('atualiza e retorna o produto ao chamar a função updateProduct', async function () {
     const req = { params: { id: 1 }, body: { name: 'Updated Product' } };
     const res = {
@@ -76,5 +90,35 @@ describe('Testando o Products Controller', function () {
 
     expect(res.status).to.have.been.calledWith(200);
     expect(res.json).to.have.been.calledWith(updatedProduct);
+  });
+
+  it('deleta um produto e retorna o status 204 ao chamar a função deleteProduct', async function () {
+    const req = { params: { id: 1 } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    const productBD = { id: 1, name: 'Product to delete' };
+    sinon.stub(productsModel, 'findByIdProducts').resolves(productBD);
+    sinon.stub(productsService, 'deleteProduct').resolves();
+    await productsController.deleteProduct(req, res);
+
+    expect(res.status).to.have.been.calledWith(204);
+    expect(res.json).to.have.been.calledWith();
+  });
+  
+  it('retorna o erro 404 ao tentar deletar um produto que não existe', async function () {
+    const req = { params: { id: 100 } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    sinon.stub(productsModel, 'findByIdProducts').resolves(null);
+    await productsController.deleteProduct(req, res);
+
+    expect(res.status).to.have.been.calledWith(404);
+    expect(res.json).to.have.been.calledWith({ message: 'Product not found' });
   });
 });

@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
 const connection = require('../../../src/models/connection');
-const { findAllProducts, findByIdProducts } = require('../../../src/models/products.model');
+const { findAllProducts, findByIdProducts, createProductByName, updateProducts } = require('../../../src/models/products.model');
 const { mockAllProducts, mockByIdProducts } = require('../mock/products.mock');
 
 describe('Testando o Products Model', function () {
@@ -30,5 +30,50 @@ describe('Testando o Products Model', function () {
     const response = await findByIdProducts(6);
     
     expect(response).to.be.equal(undefined);
+  });
+  it('retorna um novo produto ao utilizar a função createProductByName', async function () {
+    const newProduct = 'Novo Produto';
+    const insertId = 7;
+    sinon.stub(connection, 'execute').resolves([{ insertId }]);
+    const response = await createProductByName(newProduct);
+  
+    expect(response).to.be.an('object');
+    expect(response).to.deep.equal({ id: insertId, name: newProduct });
+  });
+  
+  it('retorna um erro ao criar um produto que apresente divergência com o banco de dados', async function () {
+    const newProduct = 'Produto com Erro';
+    const error = new Error('Erro ao inserir produto');
+    sinon.stub(connection, 'execute').rejects(error);
+  
+    try {
+      await createProductByName(newProduct);
+      throw new Error('Expected an error to be thrown.');
+    } catch (err) {
+      expect(err).to.equal(error);
+    }
+  });
+  it('retorna uma atualização de um produto', async function () {
+    const updProductId = 1;
+    const nameNewProduct = 'Produto Atualizado';
+    sinon.stub(connection, 'execute').resolves();
+    const response = await updateProducts(updProductId, nameNewProduct);
+  
+    expect(response).to.be.an('object');
+    expect(response).to.deep.equal({ id: updProductId, name: nameNewProduct });
+  });
+  
+  it('retorna um erro ao atualizar um produto com erro no banco de dados', async function () {
+    const updProductId = 1;
+    const nameNewProduct = 'Produto Atualizado';
+    const error = new Error('Erro ao atualizar produto');
+    sinon.stub(connection, 'execute').rejects(error);
+  
+    try {
+      await updateProducts(updProductId, nameNewProduct);
+      throw new Error('Expected an error to be thrown.');
+    } catch (err) {
+      expect(err).to.equal(error);
+    }
   });
 });

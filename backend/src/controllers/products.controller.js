@@ -1,12 +1,15 @@
 const { productsService } = require('../services');
 const productsModel = require('../models/products.model');
 
+const ERROR_MSG = 'Internal server error';
+const NOT_FOUND = 'Product not found';
+
 const getAllProducts = async (_req, res) => {
   try {
     const products = await productsService.getAllProducts();
     return res.status(200).json(products);
   } catch (error) {
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: ERROR_MSG });
   }
 };
 
@@ -20,7 +23,7 @@ const getByIdProducts = async (req, res) => {
     }
     return res.status(200).json(product);
   } catch (error) {
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: ERROR_MSG });
   }
 };
 
@@ -31,7 +34,7 @@ const createProductByName = async (req, res) => {
     
     return res.status(201).json(product);
   } catch (error) {
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: ERROR_MSG });
   }
 };
 
@@ -45,9 +48,23 @@ const updateProduct = async (req, res) => {
       const updatedProduct = await productsService.updateProduct(id, product.name);
       return res.status(200).json(updatedProduct);
     }
-    return res.status(404).json({ message: 'Product not found' });
+    return res.status(404).json({ message: NOT_FOUND });
   } catch (err) {
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: ERROR_MSG });
+  }
+};
+
+const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const productBD = await productsModel.findByIdProducts(id);
+    if (!productBD) {
+      return res.status(404).json({ message: NOT_FOUND });
+    }
+    const product = await productsService.deleteProduct(id);
+    return res.status(204).json(product);
+  } catch (error) {
+    return res.status(500).json({ message: ERROR_MSG });
   }
 };
 
@@ -56,4 +73,5 @@ module.exports = {
   getByIdProducts,
   createProductByName,
   updateProduct,
+  deleteProduct,
 };
