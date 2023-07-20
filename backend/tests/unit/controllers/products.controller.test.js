@@ -9,6 +9,8 @@ const { productsModel } = require('../../../src/models');
 const { expect } = chai;
 chai.use(sinonChai);
 
+const ERROR_MSG = 'Internal server error';
+
 describe('Testando o Products Controller', function () {
   beforeEach(function () {
     sinon.restore();
@@ -41,7 +43,7 @@ describe('Testando o Products Controller', function () {
 
     expect(res.status).to.have.been.calledWith(500);
     expect(res.json).to.have.been.calledWith({
-      message: 'Internal server error',
+      message: ERROR_MSG,
     });
   });
 
@@ -61,6 +63,38 @@ describe('Testando o Products Controller', function () {
     expect(res.json).to.have.been.calledWith(null);
   });
 
+  it('retorna o erro 500 ao chamar a função getByIdProducts com falha no serviço', async function () {
+    const req = { params: { id: 1 } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    const errorMessage = 'Failed to get product by ID';
+    sinon.stub(productsService, 'getByIdProducts').throws(new Error(errorMessage));
+
+    await productsController.getByIdProducts(req, res);
+
+    expect(res.status).to.have.been.calledWith(500);
+    expect(res.json).to.have.been.calledWith({ message: ERROR_MSG });
+  });
+
+  it('retorna o erro 500 ao chamar a função createProductByName com falha no serviço', async function () {
+    const req = { body: { name: 'New Product' } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    const errorMessage = 'Failed to create product';
+    sinon.stub(productsService, 'createProductByName').throws(new Error(errorMessage));
+
+    await productsController.createProductByName(req, res);
+
+    expect(res.status).to.have.been.calledWith(500);
+    expect(res.json).to.have.been.calledWith({ message: ERROR_MSG });
+  });
+
   it('retorna o produto ao chamar a função getByIdProducts', async function () {
     const req = { params: { id: 2 } };
     const res = {
@@ -73,6 +107,20 @@ describe('Testando o Products Controller', function () {
 
     expect(res.status).to.have.been.calledWith(200);
     expect(res.json).to.have.been.calledWith(mockByIdProducts);
+  });
+
+  it('retorna o erro 404 ao chamar a função getByIdProducts para um produto não encontrado', async function () {
+    const req = { params: { id: 100 } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    sinon.stub(productsService, 'getByIdProducts').resolves({ message: 'Product not found' });
+    await productsController.getByIdProducts(req, res);
+
+    expect(res.status).to.have.been.calledWith(404);
+    expect(res.json).to.have.been.calledWith({ message: 'Product not found' });
   });
 
   it('atualiza e retorna o produto ao chamar a função updateProduct', async function () {
@@ -90,6 +138,37 @@ describe('Testando o Products Controller', function () {
 
     expect(res.status).to.have.been.calledWith(200);
     expect(res.json).to.have.been.calledWith(updatedProduct);
+  });
+
+  it('retorna o erro 500 ao chamar a função updateProduct com falha no serviço', async function () {
+    const req = { params: { id: 1 }, body: { name: 'Updated Product' } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    const errorMessage = 'Failed to update product';
+    sinon.stub(productsModel, 'findByIdProducts').resolves({ id: 1, name: 'Old Product' });
+    sinon.stub(productsService, 'updateProduct').throws(new Error(errorMessage));
+
+    await productsController.updateProduct(req, res);
+
+    expect(res.status).to.have.been.calledWith(500);
+    expect(res.json).to.have.been.calledWith({ message: ERROR_MSG });
+  });
+
+  it('retorna o erro 404 ao chamar a função updateProduct para um produto não encontrado', async function () {
+    const req = { params: { id: 100 }, body: { name: 'Updated Product' } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    sinon.stub(productsModel, 'findByIdProducts').resolves(null);
+    await productsController.updateProduct(req, res);
+
+    expect(res.status).to.have.been.calledWith(404);
+    expect(res.json).to.have.been.calledWith({ message: 'Product not found' });
   });
 
   it('deleta um produto e retorna o status 204 ao chamar a função deleteProduct', async function () {
@@ -120,5 +199,22 @@ describe('Testando o Products Controller', function () {
 
     expect(res.status).to.have.been.calledWith(404);
     expect(res.json).to.have.been.calledWith({ message: 'Product not found' });
+  });
+
+  it('retorna o erro 500 ao chamar a função deleteProduct com falha no serviço', async function () {
+    const req = { params: { id: 1 } };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    const errorMessage = 'Failed to delete product';
+    sinon.stub(productsModel, 'findByIdProducts').resolves({ id: 1, name: 'Product to delete' });
+    sinon.stub(productsService, 'deleteProduct').throws(new Error(errorMessage));
+
+    await productsController.deleteProduct(req, res);
+
+    expect(res.status).to.have.been.calledWith(500);
+    expect(res.json).to.have.been.calledWith({ message: ERROR_MSG });
   });
 });

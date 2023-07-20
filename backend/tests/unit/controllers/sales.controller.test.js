@@ -75,4 +75,22 @@ describe('Testando o Sales Controller', function () {
     expect(res.status).to.have.been.calledWith(404);
     expect(res.json).to.have.been.calledWith({ message: 'Sale not found' });
   });
+  it('retorna o erro 500 ao chamar a função deleteSale com falha no serviço', async function () {
+    const req = {
+      params: {
+        id: 1,
+      },
+    };
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    sinon.stub(salesService, 'getByIdSales').throws(new Error('Test error'));
+
+    await salesController.deleteSale(req, res);
+
+    expect(res.status).to.have.been.calledWith(500);
+    expect(res.json).to.have.been.calledWith({ message: 'Internal server error' });
+  });
 });

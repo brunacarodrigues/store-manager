@@ -33,8 +33,23 @@ const createSales = async (req, res) => {
   }
 };
 
+const deleteSale = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const sale = await salesService.getByIdSales(id);
+    if (!sale.message) {
+      await salesService.deleteSale(id);
+      return res.status(204).json({ message: 'Full deleted sale' });
+    }
+    return res.status(404).json({ message: 'Sale not found' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
   getAllSales,
   getByIdSales,
   createSales,
+  deleteSale,
 };

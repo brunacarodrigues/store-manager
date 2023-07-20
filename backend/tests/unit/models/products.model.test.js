@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
 const connection = require('../../../src/models/connection');
-const { findAllProducts, findByIdProducts, createProductByName, updateProducts } = require('../../../src/models/products.model');
+const { findAllProducts, findByIdProducts, createProductByName, updateProducts, deleteProduct } = require('../../../src/models/products.model');
 const { mockAllProducts, mockByIdProducts } = require('../mock/products.mock');
 
 describe('Testando o Products Model', function () {
@@ -71,6 +71,27 @@ describe('Testando o Products Model', function () {
   
     try {
       await updateProducts(updProductId, nameNewProduct);
+      throw new Error('Expected an error to be thrown.');
+    } catch (err) {
+      expect(err).to.equal(error);
+    }
+  });
+
+  it('retorna a deleção de um produto corretamente', async function () {
+    const producDeletedId = 1;
+    sinon.stub(connection, 'execute').resolves();
+    const response = await deleteProduct(producDeletedId);
+  
+    expect(response).to.be.equal(true);
+  });
+  
+  it('retorna um erro ao deletar um produto com erro no banco de dados', async function () {
+    const producDeletedId = 1;
+    const error = new Error('Erro ao deletar produto');
+    sinon.stub(connection, 'execute').rejects(error);
+  
+    try {
+      await deleteProduct(producDeletedId);
       throw new Error('Expected an error to be thrown.');
     } catch (err) {
       expect(err).to.equal(error);

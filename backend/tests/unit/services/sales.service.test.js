@@ -36,4 +36,11 @@ describe('Testando o Sales Service', function () {
 
     expect(response).to.be.deep.equal({ message: 'Sale not found' });
   });
+  it('retorna se a venda for deletada', async function () {
+    const idSaleDeleted = 69;
+    const deleteSaleStub = sinon.stub(salesModel, 'deleteSale');
+    await salesService.deleteSale(idSaleDeleted);
+
+    expect(deleteSaleStub).to.have.been.calledWith(idSaleDeleted);
+  });
 });
