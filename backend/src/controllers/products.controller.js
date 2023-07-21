@@ -68,10 +68,21 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const searchByNameProducts = async (req, res) => {
+  try {
+    const { q } = req.query;
+    const productsList = await productsService.searchByNameProducts(q);
+    return res.status(200).json(productsList);
+  } catch (error) {
+    return res.status(500).json({ message: ERROR_MSG });
+  }
+};
+
 module.exports = {
   getAllProducts,
   getByIdProducts,
   createProductByName,
   updateProduct,
   deleteProduct,
+  searchByNameProducts,
 };

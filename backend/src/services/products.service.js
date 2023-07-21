@@ -28,10 +28,16 @@ const deleteProduct = async (id) => {
   return product;
 };
 
+const searchByNameProducts = async (name) => {
+  const product = await productsModel.findyByNameProducts(name);
+  return product;
+};
+
 module.exports = {
   getAllProducts,
   getByIdProducts,
   createProductByName,
   updateProduct,
   deleteProduct,
+  searchByNameProducts,
 };
