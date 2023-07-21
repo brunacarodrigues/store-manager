@@ -1,11 +1,13 @@
 const { salesService } = require('../services');
 
+const ERROR_MSG = 'Internal server error';
+
 const getAllSales = async (_req, res) => {
   try {
     const sales = await salesService.getAllSales();
     return res.status(200).json(sales);
   } catch (error) {
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: ERROR_MSG });
   }
 };
   
@@ -19,7 +21,7 @@ const getByIdSales = async (req, res) => {
     }
     return res.status(200).json(sale);
   } catch (error) {
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: ERROR_MSG });
   }
 };
 
@@ -29,7 +31,7 @@ const createSales = async (req, res) => {
     const sale = await salesService.createSales(newSale);
     return res.status(201).json(sale);
   } catch (error) {
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: ERROR_MSG });
   }
 };
 
@@ -43,7 +45,18 @@ const deleteSale = async (req, res) => {
     }
     return res.status(404).json({ message: 'Sale not found' });
   } catch (error) {
-    return res.status(500).json({ message: 'Internal server error' });
+    return res.status(500).json({ message: ERROR_MSG });
+  }
+};
+
+const updateSale = async (req, res) => {
+  try {
+    const { saleId, productId } = req.params;
+    const { quantity } = req.body;
+    const [updatedSale] = await salesService.updateSale(saleId, productId, quantity);
+    return res.status(200).json(updatedSale);
+  } catch (error) {
+    return res.status(500).json({ message: ERROR_MSG });
   }
 };
 
@@ -52,4 +65,5 @@ module.exports = {
   getByIdSales,
   createSales,
   deleteSale,
+  updateSale,
 };
