@@ -1,10 +1,2 @@
-# :construction: README em construção ! :construction:
-<!-- Olá, Tryber!
-Esse é apenas um arquivo inicial para o README do seu projeto.
-É essencial que você preencha esse documento por conta própria, ok?
-Não deixe de usar nossas dicas de escrita de README de projetos, e deixe sua criatividade brilhar!
-:warning: IMPORTANTE: você precisa deixar nítido:
-- quais arquivos/pastas foram desenvolvidos por você; 
-- quais arquivos/pastas foram desenvolvidos por outra pessoa estudante;
-- quais arquivos/pastas foram desenvolvidos pela Trybe.
--->
+Projeto do módulo de Back-End.
+Criação de uma API RESTful para um sistema de gestão de produtos e vendas, utilizando um framework web como Express.js em Node.js, implementando endpoints para listar, cadastrar, atualizar e deletar produtos e vendas. Além disso, incluem a implementação de validações para garantir a integridade dos dados e a segurança da aplicação, bem como a manipulação de dados em um banco de dados para realizar operações CRUD, exclusão de vendas, atualização de quantidades de produtos em vendas e pesquisa de produtos.
